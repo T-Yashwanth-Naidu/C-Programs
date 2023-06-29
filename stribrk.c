@@ -7,6 +7,11 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+struct Result{
+    int location;
+    char character;
+};
+typedef struct Result result;
 
 int string_length(const char *string)       // Calculate the length of the string
 { 
@@ -22,14 +27,14 @@ int string_length(const char *string)       // Calculate the length of the strin
 
 
 
-char *stribrk(const char *s1, const char *s2)   // Check for the first occurance of elements of s2 in s1
+result stribrk(const char *s1, const char *s2)   // Check for the first occurance of elements of s2 in s1
 {
     int i,j;
     int string1_length= string_length(s1);
     int string2_length= string_length(s2);
     int store_length= string2_length;
     char store[store_length];
-    int *result=NULL;
+    result stribrk_result;
     
     for(i=0;i<store_length;i++)
     {
@@ -40,19 +45,26 @@ char *stribrk(const char *s1, const char *s2)   // Check for the first occurance
     {
         for(j=0;j<string1_length;i++)
         {
-            if(*(s2+i)== *(s1+j))
+            if(*(s2+i) == *(s1+j))
             {
-                result=(char*)malloc(2*sizeof(char));
-                *(result+0) =
+                printf("%c %c\n",*(s2+i),*(s1+j));
+                stribrk_result.location=i;
+                stribrk_result.character= *(s2+i);
+                return stribrk_result;
             }
+            
+        }
+        {
+                stribrk_result.location=0;
+                stribrk_result.character= '\0';
+
+            return (stribrk_result);
         }
     }
 
 
 
-    printf("\n%s\n ",store);
-
-    return store;
+    printf("\n%d\t%c\n ",stribrk_result.location,stribrk_result.character);
 }
 
 
@@ -60,19 +72,20 @@ void main()
 {
     
     char string1[100], string2[100];
-    char* data =NULL;
-
+    result main_result;
     printf("Enter the string S1(length < 100): ");
     gets(string1);
 
     printf("Enter the string S2(length < 100): ");
     gets(string2);
     
-    data = (char *)malloc(20*(sizeof(char)));
-    data = stribrk(string1,string2);
-
- // printf("\n*(string2+0)=%c\t*(string2+1)=%c\t*(string2+2)=%c\t(*string2+1)=%c\t(*string2+2)=%c\t(*string2)++ =%c\n ",*(string2+0),*(string2+1),*(string2+2),(*string2+1),(*string2+2),(*string2)++);
-  
     
-    printf("\nThe S1 starts in S2 at %s in S2\n",*data);
+    main_result = stribrk(string1,string2);
+    if(main_result.character=='\0')
+    {   
+         printf("No match\n");
+    }
+    else{    
+        printf("\nThe first occurance of %c in S1 starts at %d word\n",main_result.location, main_result.character);
+    }
 }
