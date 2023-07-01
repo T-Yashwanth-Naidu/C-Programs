@@ -4,6 +4,8 @@
 // This program does not use any function from the string.h library.
 // Synatx of strpbrk:  char *strpbrk(const char *s, const char *accept)
 
+// Progress: Working.
+
 #include<stdio.h>
 #include<stdlib.h>
 
@@ -43,28 +45,25 @@ result stribrk(const char *s1, const char *s2)   // Check for the first occuranc
 
     for(i=0;i<store_length;i++)
     {
-        for(j=0;j<string1_length;i++)
+        for(j=0;j<string1_length;j++)
         {
-            if(*(s2+i) == *(s1+j))
+            if( *(store+i) == *(s1+j) )
             {
-                printf("%c %c\n",*(s2+i),*(s1+j));
+                printf("i=%d\n",i);
+                printf("%c %c\n",*(store+i),*(s1+j));
                 stribrk_result.location=i;
-                stribrk_result.character= *(s2+i);
+                stribrk_result.character= *(store+i);
                 return stribrk_result;
             }
             
         }
-        {
-                stribrk_result.location=0;
-                stribrk_result.character= '\0';
-
-            return (stribrk_result);
-        }
+        
     }
 
+    stribrk_result.location=0;
+    stribrk_result.character= '\0'; 
+    return (stribrk_result);
 
-
-    printf("\n%d\t%c\n ",stribrk_result.location,stribrk_result.character);
 }
 
 
@@ -86,6 +85,6 @@ void main()
          printf("No match\n");
     }
     else{    
-        printf("\nThe first occurance of %c in S1 starts at %d word\n",main_result.location, main_result.character);
+        printf("\nThe first occurance of %d in S1 starts at %c character\n",main_result.location, main_result.character);
     }
 }
