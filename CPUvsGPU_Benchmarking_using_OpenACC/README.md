@@ -67,7 +67,11 @@ For Running the project directly on Linux Environment:
 5) Once the executable is created, run it using 
 “ ./sequential_calculator” for a sequential program and “./parallel_calculator” for the parallel program.  ( The Object executables may refer)
 
+List of Operations:
+
 ![List of Operations](./List_of_Operations.png)
+
+Processing Timing Table:
 
 ![Sequential and Parallel Processing Time Table](./Sequential_and_Parallel_Processing_Time_Table.png)
 
