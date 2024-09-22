@@ -75,3 +75,5 @@ Processing Timing Table:
 
 ![Sequential and Parallel Processing Time Table](./Sequential_and_Parallel_Processing_Time_Table.png)
 
+Graph:
+![Graph](./Graph.png)
