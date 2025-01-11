@@ -1,0 +1,123 @@
+/*Memchr() – Search for First occurrence of a given byte value
+
+Memchr is a function present in string.h which would scan the initial n bytes of the memory area pointed by to a block of memory for the first instance of a character. 
+Syntax:
+void  *memchr( const void *s, int c, size_t n);
+s – Pointer to a block of memory where the search is performed.
+c – The value of the byte to search.
+n – The number of bytes to search for within the memory block s. 
+In simple terms, it says, Search for the first ‘n’ bytes of the memory block ‘s’ for value ‘c’ .
+Upon successful execution, it would return a pointer to its location in the array. Else, it would return NULL. 
+Unlike ‘strchr’, this function only works on the specified number of bytes ‘n’. It does not assume that the given input is a string.
+
+Working of memchr:*/
+
+/* Search no more than N bytes of S for C.  */
+voi1d *
+__memchr (void const *s, int c_in, size_t n)
+{
+  if (__glibc_unlikely (n == 0))
+    return NULL;
+/* Read the first word, but munge it so that bytes before the array will not match goal. */
+
+  const op_t *word_ptr = PTR_ALIGN_DOWN (s, sizeof (op_t));
+  uintptr_t s_int = (uintptr_t) s;
+  op_t word = *word_ptr;
+  op_t repeated_c = repeat_bytes (c_in);
+
+/*
+PTR_ALIGN_DOWN: It aligns the pointer s down to the nearest word boundary (e.g., 32-bit or 64-bit depending on the architecture).
+
+uintptr_t s_int = (uintptr_t) s: Converts the pointer s to an integer type, which allows for easier manipulation.
+
+op_t word = *word_ptr: Reads the first aligned word from memory.
+
+repeat_bytes (c_in): Create a word-sized variable (repeated_c) where all bytes are filled with the value c_in. This allows for faster comparison across entire words.
+
+*/
+
+/* Compute the address of the last byte taking in consideration possible overflow.  */
+  const char *lbyte = sadd (s_int, n - 1);
+  
+  /* And also the address of the word containing the last byte. */
+  const op_t *lword = (const op_t *) PTR_ALIGN_DOWN (lbyte, sizeof (op_t));
+
+/*
+
+add (s_int, n - 1): Computes the address of the last byte in the memory block to be searched. This ensures that the search does not go beyond the bounds of the memory block.
+
+lword is the pointer to the word that contains the last byte in the memory block.
+
+*/
+  find_t mask = shift_find (find_eq_all (word, repeated_c), s_int);
+  if (mask != 0)
+    {
+      char *ret = (char *) s + index_first (mask);
+      return (ret <= lbyte) ? ret : NULL;
+    }
+/*
+
+find_eq_all (word, repeated_c): Compares the entire word against repeated_c to see if any byte in the word matches c_in. It returns a mask where each byte that matches is marked.
+
+shift_find (mask, s_int): Shifts the mask according to the alignment of the pointer s to correct for any partial-word overlap at the beginning of the search.
+
+if (mask != 0): If the mask indicates a match was found, the function calculates the exact byte location using index_first and returns it if it is within bounds (ret <= lbyte).
+
+*/
+
+  if (word_ptr == lword)
+    return NULL;
+  word = *++word_ptr;
+  while (word_ptr != lword)
+    {
+      if (has_eq (word, repeated_c))
+    return (char *) word_ptr + index_first_eq (word, repeated_c);
+      word = *++word_ptr;
+    }
+
+/*
+
+if (word_ptr == lword): If the first word was also the last word, there’s nothing left to search, so return NULL.
+Loop through full words:
+
+    word = *++word_ptr: Move to the next word and check it for matches.
+    
+    has_eq (word, repeated_c): Checks if any byte in the current word matches c_in.
+    
+    index_first_eq (word, repeated_c): If a match is found, it returns the offset of the first matching byte within that word.
+    The function then returns the pointer to the matching byte.
+  
+ */
+
+  if (has_eq (word, repeated_c))
+    {
+      /* We found a match, but it might be in a byte past the end of the array.  */
+      char *ret = (char *) word_ptr + index_first_eq (word, repeated_c);
+      if (ret <= lbyte)
+    return ret;
+    }
+
+    /*
+    After the loop, the last word is checked one final time. If a match is found within the word, the function ensures that the match is within the valid range of the memory block before returning the pointer.
+    */
+  return NULL; 
+  /* Return if no matching byte was found in the enitre memory block*/
+}
+
+//Example:
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+
+    char data[] = "Hello, World! This is a test string.";
+    char search_char = 'W';
+    size_t num_bytes = strlen(data);
+    char *result = memchr(data, search_char, num_bytes);
+    if (result != NULL) {
+        printf("Character '%c' found at position: %ld\n", search_char, result - data);
+    } else {
+        printf("Character '%c' not found within the first %zu bytes.\n", search_char, num_bytes);
+    }
+
+    return 0;
